@@ -40,13 +40,11 @@ Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência
 - Implementação em ambiente de produção
 
 **Projeto Prático** (`projeto02/`):
-- Classificador de mensagens de cliente
-- Parser JSON robusto
-- Validação contra lista permitida
-- Testes comparativos de temperatura
-- Relatório de análise
-
-**Desafio**: [Ver tarefa.md](projeto02/tarefa.md)
+- Classificador de mensagens de cliente com fallback seguro
+- Validação e extração JSON via `validator.py`
+- Lista de categorias permitidas e confidência de classificação
+- Mecanismo de testes automatizados (pytest) com múltiplas execuções e temperaturas
+- Geração de relatório Markdown comparativo
 
 📊 [Acessar Slides](https://eletiva-aula02.lovable.app)
 
@@ -60,12 +58,13 @@ Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência
 │   └── requirements.txt # Dependências
 │
 ├── projeto02/          # Aula 02 - Produção
-│   ├── main.py         # Classificador principal
-│   ├── classifier.py   # Lógica de classificação
-│   ├── llm_client.py   # Cliente LLM
-│   ├── validator.py    # Validação e testes
-│   ├── requirements.txt # Dependências
-│   └── tarefa.md       # Desafio da aula
+│   ├── main.py          # Classificador principal e geração de relatórios
+│   ├── classifier.py    # Lógica de classificação com fallbacks
+│   ├── llm_client.py    # Cliente LLM abstrato
+│   ├── validator.py     # Validação, parser JSON e fallback seguro
+│   ├── requirements.txt # Dependências (incluindo pytest)
+│   ├── relatorio.md     # Relatório de análises gerado pelo script
+│   └── tests/           # Suite de testes automatizados (pytest)
 │
 └── README.md          # Este arquivo
 ```
@@ -93,6 +92,7 @@ Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência
 ## 📝 Notas Importantes
 
 - Cada aula constrói sobre conceitos da aula anterior
-- Projeto 02 foca em padrões de produção não abordados no Projeto 01
-- Todos os scripts requerem autenticação OpenAI válida
+- Projeto 02 foca em padrões de produção (validação, fallback, testes)
+- Os scripts suportam execução em modo de teste sem depender da API real
+- Todos os scripts opcionais podem utilizar uma chave de API OpenAI se disponível
 
