@@ -94,13 +94,22 @@ def generate_markdown_report(all_results):
 
     print("Relatório gerado: relatorio.md")
 
-if __name__ == "__main__":
+def run(repetitions_per_temp: int = 10):
+    """Executa o conjunto completo de testes e gera o relatório.
+
+    Chamável a partir de outros módulos ou de testes para evitar
+    dependência da API real de LLM.
+    """
     temperaturas = [0.0, 0.5, 1.0]
     all_results = []
     for temp in temperaturas:
         print(f"\n--- Testando temperatura {temp} ---")
-        results = test_temperature(temp, repetitions=10)
+        results = test_temperature(temp, repetitions=repetitions_per_temp)
         all_results.extend(results)
 
     generate_markdown_report(all_results)
     print("\nProcesso concluído. Verifique o arquivo 'relatorio.md'.")
+
+
+if __name__ == "__main__":
+    run()
