@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class LLMClient:
-    def __init__(self, model="gpt-4o-mini", temperature=0.0):
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    def __init__(self, model="gpt-4o-mini", temperature=0.0, max_retries: int = 0):
+        # limitar retries evita longos bloqueios quando a cota expira (429)
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), max_retries=max_retries)
         self.model = model
         self.temperature = temperature
 

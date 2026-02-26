@@ -45,3 +45,4 @@ def test_classify_api_error(monkeypatch):
     assert res["success"] is False
     assert res["category"] == "outros"
     assert "Erro na API" in res["explanation"]
+    assert res.get("api_error") is True

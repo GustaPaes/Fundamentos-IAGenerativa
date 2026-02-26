@@ -31,7 +31,8 @@ def test_temperature(temp: float, repetitions: int = 10):
                 "category": result["category"],
                 "confidence": result["confidence"],
                 "explanation": result["explanation"],
-                "raw": result.get("raw", "")
+                "raw": result.get("raw", ""),
+                "api_error": result.get("api_error", False)
             })
     return results
 
@@ -51,22 +52,25 @@ def generate_markdown_report(all_results):
             temp_results = [r for r in all_results if r["temperature"] == temp]
             total = len(temp_results)
             success = sum(1 for r in temp_results if r["success"])
+            api_err = sum(1 for r in temp_results if r.get("api_error"))
             taxa = (success / total) * 100 if total else 0
             stats[temp] = {
                 "total": total,
                 "success": success,
+                "api_errors": api_err,
                 "taxa": taxa
             }
 
         f.write("## Resultados Gerais\n\n")
-        f.write("| Temperatura | Total Execuções | Sucessos | Taxa de Sucesso |\n")
-        f.write("|-------------|-----------------|----------|-----------------|\n")
+        f.write("| Temperatura | Total Execuções | Sucessos | Falhas | Erros de API | Taxa de Sucesso |\n")
+        f.write("|-------------|-----------------|----------|--------|--------------|-----------------|\n")
         for temp in [0.0, 0.5, 1.0]:
             s = stats[temp]
-            f.write(f"| {temp} | {s['total']} | {s['success']} | {s['taxa']:.1f}% |\n")
+            failures = s['total'] - s['success']
+            f.write(f"| {temp} | {s['total']} | {s['success']} | {failures} | {s['api_errors']} | {s['taxa']:.1f}% |\n")
         f.write("\n")
 
-        # Distribuição de categorias por temperatura
+        # Distribuição de categorias por temperatura (apenas sucessos)
         f.write("## Distribuição de Categorias (apenas sucessos)\n\n")
         for temp in [0.0, 0.5, 1.0]:
             f.write(f"### Temperatura {temp}\n")
@@ -83,14 +87,44 @@ def generate_markdown_report(all_results):
             else:
                 f.write("Nenhum sucesso registrado.\n")
             f.write("\n")
+        # Amostra de falhas para diagnóstico
+        f.write("## Exemplos de Falhas\n\n")
+        # collect first few raw outputs per temperature
+        for temp in [0.0, 0.5, 1.0]:
+            f.write(f"### Temperatura {temp}\n")
+            shown = 0
+            for r in all_results:
+                if r["temperature"] == temp and not r["success"]:
+                    f.write(f"- Mensagem: {r.get('message','<não disponível>')}\n")
+                    raw_text = str(r.get('raw',''))
+                    f.write(f"  - resposta bruta: {raw_text[:200].replace('\\n',' ')}\n")
+                    if r.get('explanation'):
+                        f.write(f"  - explicação: {r['explanation']}\n")
+                    shown += 1
+                    if shown >= 3:
+                        break
+            if shown == 0:
+                f.write("Nenhuma falha registrada.\n")
+            f.write("\n")
 
         # Análise qualitativa
+        # Análise qualitativa e conclusões dinâmicas
         f.write("## Análise e Conclusões\n\n")
-        f.write("- **Temperatura 0.0**: Resultados determinísticos, alta taxa de sucesso, pouca variação.\n")
-        f.write("- **Temperatura 0.5**: Leve aumento na diversidade de respostas, mas ainda confiável.\n")
-        f.write("- **Temperatura 1.0**: Maior criatividade, porém mais falhas de parsing e categorias fora da lista.\n")
+        for temp in [0.0, 0.5, 1.0]:
+            s = stats[temp]
+            if s['total'] == 0:
+                continue
+            if s['success'] == 0:
+                f.write(f"- Temperatura {temp}: nenhuma execução conseguiu retornar um JSON válido. "
+                        "Verifique chave de API ou formatação das respostas.\n")
+            else:
+                taxa = s['taxa']
+                f.write(f"- Temperatura {temp}: {s['success']}/{s['total']} classificações válidas ({taxa:.1f}% de sucesso).\n")
         f.write("\n")
-        f.write("**Recomendação**: Utilizar temperatura 0.2 em produção para equilibrar precisão e flexibilidade.\n")
+        f.write("**Recomendações**:\n")
+        f.write("- Certifique-se de fornecer uma chave OpenAI válida no ambiente.\n")
+        f.write("- Ajuste a temperatura para balancear precisão (0.0–0.2 recomendado) ou aumentar criatividade conscientemente.\n")
+        f.write("- Analise as falhas acima para identificar padrões de saída inválida.\n")
 
     print("Relatório gerado: relatorio.md")
 

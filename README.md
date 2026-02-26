@@ -94,5 +94,7 @@ Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência
 - Cada aula constrói sobre conceitos da aula anterior
 - Projeto 02 foca em padrões de produção (validação, fallback, testes)
 - Os scripts suportam execução em modo de teste sem depender da API real
+- Se não houver chave OpenAI, se as respostas não retornarem JSON válidos ou se a cota estiver esgotada, o relatório mostrará 0% de sucesso e exemplos de falhas (com explicações de erro)
 - Todos os scripts opcionais podem utilizar uma chave de API OpenAI se disponível
+- O cliente é configurado com `max_retries=0` para falhar rapidamente em caso de erros de quota, evitando longos bloqueios
 

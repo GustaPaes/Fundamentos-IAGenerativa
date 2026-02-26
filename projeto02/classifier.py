@@ -22,13 +22,14 @@ Mensagem: "{message}"
         try:
             raw = self.llm.get_completion(prompt)
         except Exception as e:
-            # Erro de API: fallback imediato
+            # Erro de API: fallback imediato e sinalização
             return {
                 "success": False,
                 "category": "outros",
                 "confidence": 0.0,
                 "explanation": f"Erro na API: {e}",
-                "raw": None
+                "raw": None,
+                "api_error": True
             }
 
         # Tentar extrair JSON
