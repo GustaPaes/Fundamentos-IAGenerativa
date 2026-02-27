@@ -1,55 +1,64 @@
-# IA Generativa
+# Projetos de IA Generativa
 
-**Prof. Sabrina Bet**
+Este repositório reúne três aplicações demonstrativas de inteligência
+artificial generativa construídas como parte de desafios práticos. Cada
+projeto é independente e pode ser executado isoladamente; todos usam a
+mesma estrutura básica de cliente para LLMs e podem funcionar com a API
+do OpenAI ou de outros provedores.
 
-Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência Artificial Generativa, explorando desde integração com APIs LLM até produção de sistemas robustos.
+## 📁 Visão Geral dos Projetos
 
----
+| Projeto     | Descrição rápida                                                 |
+|-------------|------------------------------------------------------------------|
+| **projeto01** | Cliente simples de chat com OpenAI; foco em aprendizado de integração e prompts.         |
+| **projeto02** | Classificador de mensagens de clientes com robustez em produção (JSON, validação, fallback, relatórios). |
+| **projeto03** | Sistema RAG (recuperação augmentada por geração) usando base de conhecimento; inclui proteção contra prompt injection e vetor store em memória. |
 
-## 📚 Projetos
+### projeto01 – Cliente de Chat
+Um script mínimo que se conecta à API da OpenAI (`gpt-4o-mini` por
+default), envia prompts e exibe respostas. Ideal para entender como
+configurar o ambiente, definir mensagens de sistema/usuário e lidar com
+parâmetros como temperatura e max tokens.
 
-### Projeto 01 - Introdução à IA Generativa com OpenAI
+Arquivos principais:
+- `main.py` – interface de linha de comando.
+- `requirements.txt` – depende apenas de `openai` e `python-dotenv`.
 
-**Objetivo**: Entender os fundamentos de IA Generativa e integração com APIs
+### projeto02 – Classificador de Mensagens
+Utiliza um LLM para categorizar mensagens de cliente em classes como
+"reclamação", "elogio", etc. Contém validação robusta do JSON retornado
+pelo modelo, proteção contra prompt injection e mecanismo de fallback
+quando a API falha. Gera relatórios Markdown com estatísticas de
+desempenho e inclui uma suite de testes (`pytest`).
 
-**Projeto Prático** (`projeto01/`):
-- Cliente OpenAI integrado
-- Prompts estruturados para diferentes contextos
-- Teste com modelo GPT-4o-mini
+Arquivos-chave:
+- `classifier.py` – lógica de classificação e fallback.
+- `validator.py` – parsing/validação de JSON e injeção de prompts.
+- `main.py` – executa várias repetições e emite `relatorio.md`.
+- `tests/` – casos de testes que não dependem da API.
 
----
+### projeto03 – RAG com Proteções
+Construção mais avançada que combina embeddings e busca por similaridade
+enquanto protege contra tentativas de instruir o modelo com prompts
+maliciosos. Suporta múltiplos provedores (OpenAI ou Groq), embeddings
+locais quando a cota OpenAI não está disponível, e leitura de arquivos
+TXT/PDF/DOCX na pasta `conhecimento/`.
 
-### Projeto 02 - Produção Ready: Validação e Robustez
+Destaques:
+- Vetorização local (hash de palavras) para operação offline.
+- Recuperação híbrida (vetorial + léxica) para maior precisão.
+- Prompt de sistema rigoroso e validação JSON melhorada.
+- Estrutura de leitura multi-formato em `retriever.py`.
 
-**Objetivo**: Transformar protótipos em soluções confiáveis para produção
-
-**Projeto Prático** (`projeto02/`):
-- Classificador de mensagens de cliente com fallback seguro
-- Validação e extração JSON via `validator.py`
-- Lista de categorias permitidas e confidência de classificação
-- Mecanismo de testes automatizados (pytest) com múltiplas execuções e temperaturas
-- Geração de relatório Markdown comparativo
-
----
-
-### Projeto 03 - RAG: Recuperacao e Protecao
-**Objetivo**: Evoluir o sistema com RAG e protecao contra prompt injection
-
-**Projeto Prático** (`projeto03/`):
-- RAG com base em conhecimento.txt
-- Recuperacao de contexto por similaridade
-- Protecao contra tentativas de prompt injection
-
----
 
 ## 📂 Estrutura do Repositório
 
 ```
-├── projeto01/          # Aula 01 - Fundamentos
+├── projeto01/          # Cliente de chat básico
 │   ├── main.py         # Script principal
 │   └── requirements.txt # Dependências
 │
-├── projeto02/          # Aula 02 - Produção
+├── projeto02/          # Classificador de mensagens com validação
 │   ├── main.py          # Classificador principal e geração de relatórios
 │   ├── classifier.py    # Lógica de classificação com fallbacks
 │   ├── llm_client.py    # Cliente LLM abstrato
@@ -83,10 +92,10 @@ Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência
 
 ## 📝 Notas Importantes
 
-- Cada aula constrói sobre conceitos da aula anterior
-- Projeto 02 foca em padrões de produção (validação, fallback, testes)
-- Os scripts suportam execução em modo de teste sem depender da API real
-- Se não houver chave OpenAI, se as respostas não retornarem JSON válidos ou se a cota estiver esgotada, o relatório mostrará 0% de sucesso e exemplos de falhas (com explicações de erro)
-- Todos os scripts opcionais podem utilizar uma chave de API OpenAI se disponível
-- O cliente é configurado com `max_retries=0` para falhar rapidamente em caso de erros de quota, evitando longos bloqueios
+- O repositório contém três projetos independentes, cada um com um foco diferente (chat, classificação e RAG).
+- Os componentes incluem validação de JSON, proteção contra prompt injection e fallback seguro para APIs.
+- Todos os scripts suportam execução em modo de teste sem depender da API real, útil para desenvolver offline.
+- Se não houver chave OpenAI ou a cota estiver esgotada, o `projeto03` utiliza embeddings locais para continuar operando.
+- Os projetos podem ser usados como base para experimentos pessoais e portfólio público.
+- O cliente LLM usa `max_retries=0` para falhar rapidamente em caso de erros de quota, evitando longos bloqueios.
 
