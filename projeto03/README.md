@@ -1,55 +1,80 @@
-# projeto03 - RAG com Proteções
+# projeto03 — RAG com Proteções (Prática / Portfólio)
 
-Sistema de RAG (Retrieval-Augmented Generation) que combina uma base de
-conhecimento simples com um LLM para responder perguntas. Desenvolvido como
-projeto de portfólio para a disciplina de IA generativa.
+Sistema RAG (Retrieval‑Augmented Generation) focado em segurança, robustez
+e documentação para uso em portfólio. O objetivo é demonstrar integração
+com LLMs, estratégias de fallback e salvaguardas contra prompt injection.
 
-## Características principais
+**Principais recursos**
 
-- Suporta provedores OpenAI e Groq para geração de texto.
-- Embeddings são usados para recuperar trechos relevantes; há fallback
-  local baseado em hash de palavras quando não há chave/cota.
-- Busca híbrida: vetorial + léxica, com limiar de similaridade ajustável e
-  lógica especial para consultas que mencionam "email".
-- Leitura automática de arquivos `.txt`, `.pdf` e `.docx` na pasta
-  `conhecimento/`.
-- Proteção contra prompt injection e validação/normalização de saída JSON.
-- CLI simples que indica quando nenhum contexto foi encontrado.
-- Utilitário de depuração (`debug_retriever.py`) para inspecionar o store e
-  testar consultas manualmente.
+- Suporte a provedores `OpenAI` e `Groq` para geração e (quando possível)
+  geração de embeddings.
+- **Fallback local de embeddings**: quando não houver chave/cota, o
+  cliente gera um embedding simples (hash 100‑dim) permitindo operação
+  offline ou em ambientes de teste.
+- **Busca híbrida (vetorial + léxica)** com threshold de similaridade
+  conservador (~0.30) para evitar matches irrelevantes; a busca léxica é
+  utilizada como complemento.
+- **Detecção e bloqueio de prompt injection**: entradas maliciosas são
+  identificadas por `validator.py` e não são encaminhadas ao LLM.
+- **Padronização condicional de contato**: quando a consulta pede
+  explicitamente `email`/`telefone` e o trecho recuperado contém contato,
+  o CLI retorna uma resposta padronizada e determinística; em outros
+  casos o modelo recebe o contexto normalmente.
+- **Leitura multi‑formato**: `.txt`, `.pdf`, `.docx` em
+  `projeto03/conhecimento/`.
+- **Utilitários**: `debug_retriever.py`, `projeto03/test_flow.py` e
+  `test_main_contact.py` para validar e depurar o retriever/fallback.
 
-## Uso
+## Instalação Rápida
 
-1. Copie um conjunto de documentos para `projeto03/conhecimento/` (pode
-   ser texto puro, PDF ou DOCX).
-2. Crie um `.env` com `OPENAI_API_KEY` ou `GROQ_API_KEY` (podem estar
-   ausentes para testar o fallback local).
-3. Instale dependências:
-
-```sh
+```bash
 cd projeto03
 pip install -r requirements.txt
+# opcional: crie um .env com OPENAI_API_KEY ou GROQ_API_KEY
 ```
 
-4. Execute:
+## Como usar
 
-```sh
-python main.py
-```
+1. Coloque documentos em `projeto03/conhecimento/` (p.ex. `conhecimento.txt`).
+2. Rode `python main.py` e escolha o provedor (`openai`/`groq`).
+3. Digite perguntas — exemplos:
 
-Siga as instruções na tela para escolher o provedor e digitar perguntas.
+- `qual email de suporte` → tentará recuperar o trecho com contato e,
+  caso exista, retornará resposta padronizada.
+- `que dia é hoje` → se não houver contexto aplicável, o CLI indicará
+  isso e o modelo responderá sem contexto.
 
-## Desenvolvimento
+## Arquitetura (arquivos principais)
 
-- `retriever.py` contém a lógica de leitura, indexação e busca.
-- `llm_client.py` abstrai o provedor e gerencia o fallback de embeddings.
-- `validator.py` sanitiza o JSON de saída e bloqueia prompt injections.
-- `prompt.py` constrói o sistema prompt rígido usado em todas as chamadas.
+- `retriever.py` — leitura de arquivos, chunking, cálculo de embeddings e
+  busca híbrida.
+- `llm_client.py` — adaptador para provedores + fallback de embeddings
+  locais.
+- `validator.py` — detecção de prompt injection e validação/normalização
+  do JSON de saída.
+- `prompt.py` — constrói o prompt de sistema seguro usado nas chamadas.
+- `main.py` — CLI que junta tudo, aplica regras de segurança e exibe
+  respostas ao usuário.
 
-Teste o comportamento de recuperação com `python ../debug_retriever.py` na
-raiz do repositório.
+## Testes & Debug
+
+- `python debug_retriever.py` (na raiz) — imprime chunks e similaridades
+  para consultas de exemplo.
+- `python projeto03/test_flow.py` — simula fluxo com uma consulta de
+  prompt injection e uma de contato.
+- `python test_main_contact.py` — teste rápido para validação de extração
+  de contato (executar do workspace root).
+
+## Boas práticas e notas para recrutadores
+
+- Projeto pensado para demonstrar decisões de engenharia: limites de
+  confiança, fallbacks e proteção contra abusos de LLM.
+- Código organizado, fácil de estender para suportar indexadores reais
+  (FAISS, Weaviate) ou embeddings de alta qualidade.
+- Fácil de rodar localmente em máquinas com ou sem chave de API — útil
+  para entrevistas técnicas e avaliações de arquitetura.
 
 ---
 
-Este projeto serve como exemplo de implementação de RAG com atenção a
-segurança e custos, apropriado para um portfólio público no GitHub.
+Se quiser que eu gere um `CONTRIBUTING.md`, um badge de status simples ou
+um `requirements.txt` enxuto para CI, eu posso adicionar em seguida.
