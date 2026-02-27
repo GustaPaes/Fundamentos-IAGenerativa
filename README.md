@@ -38,17 +38,41 @@ Arquivos-chave:
 - `tests/` – casos de testes que não dependem da API.
 
 ### projeto03 – RAG com Proteções
-Construção mais avançada que combina embeddings e busca por similaridade
-enquanto protege contra tentativas de instruir o modelo com prompts
-maliciosos. Suporta múltiplos provedores (OpenAI ou Groq), embeddings
-locais quando a cota OpenAI não está disponível, e leitura de arquivos
-TXT/PDF/DOCX na pasta `conhecimento/`.
+Projeto mais completo do trio: um motor de _Retrieval-Augmented
+Generation_ alimentado por uma base de conhecimento simples, com todas as
+salvaguardas necessárias para uso em produção (pelo menos na versão de
+prova de conceito).
+
+O usuário digita uma pergunta e o programa tenta recuperar o trecho mais
+relevante do conjunto de documentos dentro de `projeto03/conhecimento`.
+Se não houver contexto adequado, o sistema deixa claro (`nenhum contexto`
+no CLI) e o modelo responde apenas com o prompt de sistema. Para evitar
+respostas fantasiosas, há uma dupla verificação:
+
+- **Busca híbrida**: primeiro tentativa vetorial (embeddings); se a
+	similaridade for baixa (< ~0.30) ou não houver palavras-chave em comum,
+	fazemos uma segunda rodada léxica baseada em interseção de termos.
+- **Tratamento especial de e‑mails**: consultas que mencionam “email”
+	retornam diretamente o trecho contendo `@` ou a palavra `suporte`.
+
+Além disso, o código prepara o modelo com um prompt de sistema estrito e
+passa as respostas por `validator.py` para garantir que o LLM sempre retorne
+JSON bem-formado e não seja induzido por _prompt injection_.
+
+As embeddings são geradas via OpenAI/Groq quando disponíveis; na falta de
+chave ou cota, o cliente automaticamente recorre a um vetor hash de 100
+dimensões (sem dependências externas). Há também um pequeno utilitário
+`debug_retriever.py` (na raiz do workspace) que imprime os chunks indexados
+e mostra como a similaridade é calculada para facilitar ajustes.
 
 Destaques:
-- Vetorização local (hash de palavras) para operação offline.
-- Recuperação híbrida (vetorial + léxica) para maior precisão.
-- Prompt de sistema rigoroso e validação JSON melhorada.
-- Estrutura de leitura multi-formato em `retriever.py`.
+- Vetorização local e fallback inteligente para continuar offline.
+- Thresholds de similaridade calibrados para não responder a perguntas
+	irrelevantes (“que dia é hoje” agora retorna vazio em vez de qualquer
+	trecho).
+- Lógica léxica complementar com exclusão de stopwords e detecção de e‑mail.
+- Proteção robusta contra prompt injection e validação de saída JSON.
+- Leitura automática de `.txt`, `.pdf` e `.docx` na pasta de conhecimento.
 
 
 ## 📂 Estrutura do Repositório
