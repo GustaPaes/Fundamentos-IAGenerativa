@@ -1,0 +1,5 @@
+python-dotenv
+openai
+groq
+PyPDF2
+python-docx

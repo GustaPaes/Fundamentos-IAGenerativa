@@ -6,38 +6,22 @@ Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência
 
 ---
 
-## 📚 Aulas
+## 📚 Projetos
 
-### Aula 01 - Introdução à IA Generativa com OpenAI
+### Projeto 01 - Introdução à IA Generativa com OpenAI
 
 **Objetivo**: Entender os fundamentos de IA Generativa e integração com APIs
-
-**Conteúdo**:
-- Conceitos fundamentais de modelos de linguagem
-- Integração com OpenAI API
-- Prompts efetivos
-- Controle de temperatura e parâmetros
-- Análise de riscos e arquitetura
 
 **Projeto Prático** (`projeto01/`):
 - Cliente OpenAI integrado
 - Prompts estruturados para diferentes contextos
 - Teste com modelo GPT-4o-mini
 
-📊 [Acessar Slides](https://eletiva-aula01.lovable.app/)
-
 ---
 
-### Aula 02 - Produção Ready: Validação e Robustez
+### Projeto 02 - Produção Ready: Validação e Robustez
 
 **Objetivo**: Transformar protótipos em soluções confiáveis para produção
-
-**Conteúdo**:
-- Criação de classificadores com IA
-- Validação de dados e formato JSON
-- Tratamento de erros e exceções
-- Testes com múltiplas execuções e temperaturas
-- Implementação em ambiente de produção
 
 **Projeto Prático** (`projeto02/`):
 - Classificador de mensagens de cliente com fallback seguro
@@ -46,7 +30,15 @@ Disciplina eletiva focada em conceitos e aplicações práticas de Inteligência
 - Mecanismo de testes automatizados (pytest) com múltiplas execuções e temperaturas
 - Geração de relatório Markdown comparativo
 
-📊 [Acessar Slides](https://eletiva-aula02.lovable.app)
+---
+
+### Projeto 03 - RAG: Recuperacao e Protecao
+**Objetivo**: Evoluir o sistema com RAG e protecao contra prompt injection
+
+**Projeto Prático** (`projeto03/`):
+- RAG com base em conhecimento.txt
+- Recuperacao de contexto por similaridade
+- Protecao contra tentativas de prompt injection
 
 ---
 
