@@ -13,6 +13,7 @@ API disponível.
 | **projeto01** | Cliente simples de chat com OpenAI; foco em aprendizado de integração e prompts.         |
 | **projeto02** | Classificador de mensagens de clientes com robustez em produção (JSON, validação, fallback, relatórios). |
 | **projeto03** | Sistema RAG (retrieval-augmented generation) com proteção contra prompt injection, fallback de embeddings locais e ferramentas de debug. |
+| **projeto04** | Chatbot com memória persistente, persona definida e integração de funções Python (idade, conversão, IMC, gerador de senhas). Suporta OpenAI ou Groq via `LLM_PROVIDER`. |
 
 ### projeto01 – Cliente de Chat
 Um script mínimo que se conecta à API da OpenAI (`gpt-4o-mini` por
@@ -90,6 +91,13 @@ integração com LLMs.
 │   ├── relatorio.md     # Relatório de análises gerado pelo script
 │   └── tests/           # Suite de testes automatizados (pytest)
 │
+├── projeto04/          # Chatbot com memória persistente e funções Python
+│   ├── main.py          # Chat CLI com histórico e execução de funções
+│   ├── tools.py         # Funções auxiliares (idade, temperatura, IMC, senha)
+│   ├── history.json     # Histórico salvo entre execuções (é gerado em runtime)
+│   ├── requirements.txt # Dependências
+│   └── README.md        # Como executar e testar o projeto
+│
 └── README.md          # Este arquivo
 ```
 
@@ -115,7 +123,7 @@ integração com LLMs.
 
 ## 📝 Notas Importantes
 
-- O repositório contém três projetos independentes, cada um com um foco diferente (chat, classificação e RAG).
+- O repositório contém quatro projetos independentes, cada um com um foco diferente (chat, classificação, RAG e chatbot com memória).
 - Os componentes incluem validação de JSON, proteção contra prompt injection e fallback seguro para APIs.
 - Todos os scripts suportam execução em modo de teste sem depender da API real, útil para desenvolver offline.
 - Se não houver chave OpenAI ou a cota estiver esgotada, o `projeto03` utiliza embeddings locais para continuar operando.
